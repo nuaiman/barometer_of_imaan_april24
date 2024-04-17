@@ -36,6 +36,7 @@ class DeedsView extends ConsumerWidget {
             ),
             Expanded(
               child: ListView.builder(
+                padding: EdgeInsets.zero,
                 itemCount: dailyDeeds.length,
                 itemBuilder: (context, index) {
                   final deed = dailyDeeds[index];

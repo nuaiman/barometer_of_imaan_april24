@@ -39,20 +39,46 @@ class ReminderController extends StateNotifier<List<SalahAlarm>> {
     state = List.from(state);
   }
 
-  Future<void> toggleSalahAlarm(SalahAlarm salahAlarm, Salah salah) async {
+  Future<void> addSalahAlarm(SalahAlarm salahAlarm, Salah salah) async {
     final List<SalahAlarm> existingAlarms = state;
     final existingIndex =
         existingAlarms.indexWhere((alarm) => alarm.id == salahAlarm.id);
     if (existingIndex != -1) {
-      existingAlarms.removeAt(existingIndex);
-      await AwesomeNotifications().cancel(salah.id);
+      existingAlarms[existingIndex] = salahAlarm;
     } else {
       existingAlarms.add(salahAlarm);
-      setAlarmForSalah(salah);
     }
     await _saveSalahAlarms(existingAlarms);
     state = existingAlarms;
+    await setAlarmForSalah(salah, salahAlarm);
     state = List.from(state);
+  }
+
+  Future<void> removeSalahAlarm(int id, Salah salah) async {
+    final List<SalahAlarm> existingAlarms = state;
+    final existingIndex = existingAlarms.indexWhere((alarm) => alarm.id == id);
+    if (existingIndex != -1) {
+      existingAlarms.removeAt(existingIndex);
+      await _saveSalahAlarms(existingAlarms);
+      state = existingAlarms;
+      await AwesomeNotifications().cancel(salah.id);
+      state = List.from(state);
+    }
+  }
+
+  Future<void> toggleSalahAzanStatus(int id, Salah salah) async {
+    final List<SalahAlarm> existingAlarms = state;
+    final existingIndex = existingAlarms.indexWhere((alarm) => alarm.id == id);
+    if (existingIndex != -1) {
+      final updatedAlarm = existingAlarms[existingIndex].copyWith(
+        isAzan: !existingAlarms[existingIndex].isAzan, // Toggle isAzan value
+      );
+      existingAlarms[existingIndex] = updatedAlarm;
+      await _saveSalahAlarms(existingAlarms);
+      state = existingAlarms;
+      await setAlarmForSalah(salah, updatedAlarm);
+      state = List.from(state);
+    }
   }
 
   SalahAlarm? getSalahAlarmById(int id) {
@@ -65,8 +91,10 @@ class ReminderController extends StateNotifier<List<SalahAlarm>> {
     );
   }
 
-  Future<void> setAlarmForSalah(Salah salah) async {
-    final notificationId = salah.id;
+  Future<void> setAlarmForSalah(Salah salah, SalahAlarm salahAlarm) async {
+    await AwesomeNotifications().cancel(salah.id);
+    await AwesomeNotifications().cancel(salah.id * 10);
+    final notificationId = salahAlarm.isAzan ? salah.id * 10 : salah.id;
     final scheduledTime = salah.time;
     String localTimeZone =
         await AwesomeNotifications().getLocalTimeZoneIdentifier();
@@ -98,61 +126,10 @@ class ReminderController extends StateNotifier<List<SalahAlarm>> {
     for (final salah in salahList) {
       final existingAlarm = getSalahAlarmById(salah.id);
       if (existingAlarm != null) {
-        await setAlarmForSalah(salah);
+        await setAlarmForSalah(salah, existingAlarm);
       }
     }
   }
-
-// -----------------------------------------------------------------------------
-
-  Future<void> setAdhkarReminder(
-      DateTime time, int id, String whichAdhkar) async {
-    final scheduledTime = time;
-    // -----------------------
-    String localTimeZone =
-        await AwesomeNotifications().getLocalTimeZoneIdentifier();
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: id,
-        channelKey: id.toString(),
-        title: 'Reminder',
-        body: 'It\'s time for $whichAdhkar Adhkar.',
-        category: NotificationCategory.Reminder,
-        actionType: ActionType.Default,
-      ),
-      schedule: NotificationCalendar(
-        repeats: true,
-        preciseAlarm: true,
-        timeZone: localTimeZone,
-        hour: scheduledTime.hour,
-        minute: scheduledTime.minute,
-        second: scheduledTime.second,
-        allowWhileIdle: true,
-      ),
-    );
-  }
-
-  // Future<void> setEveningAdhkarReminder(DateTime time) async {
-  //   const notificationId = 66;
-  //   final scheduledTime = time.add(const Duration(minutes: 10));
-  //   // -----------------------
-  //   await AwesomeNotifications().createNotification(
-  //     content: NotificationContent(
-  //       id: notificationId,
-  //       channelKey: notificationId.toString(),
-  //       title: 'Adhkar Reminder',
-  //       body: 'Evening Adhkar Reminder.',
-  //       category: NotificationCategory.Reminder,
-  //       actionType: ActionType.DismissAction,
-  //     ),
-  //     schedule: NotificationCalendar(
-  //       repeats: true,
-  //       hour: scheduledTime.hour,
-  //       minute: scheduledTime.minute,
-  //       allowWhileIdle: true,
-  //     ),
-  //   );
-  // }
 }
 // -----------------------------------------------------------------------------
 

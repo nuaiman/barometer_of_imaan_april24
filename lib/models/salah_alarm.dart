@@ -3,24 +3,25 @@ import 'dart:convert';
 class SalahAlarm {
   final int id;
   final String titleEn;
+  final bool isAzan;
   final DateTime date;
   SalahAlarm({
     required this.id,
     required this.titleEn,
+    required this.isAzan,
     required this.date,
   });
 
   SalahAlarm copyWith({
     int? id,
     String? titleEn,
-    String? titleBn,
     bool? isAzan,
-    bool? isEnglish,
     DateTime? date,
   }) {
     return SalahAlarm(
       id: id ?? this.id,
       titleEn: titleEn ?? this.titleEn,
+      isAzan: isAzan ?? this.isAzan,
       date: date ?? this.date,
     );
   }
@@ -29,6 +30,7 @@ class SalahAlarm {
     return <String, dynamic>{
       'id': id,
       'titleEn': titleEn,
+      'isAzan': isAzan,
       'date': date.millisecondsSinceEpoch,
     };
   }
@@ -37,6 +39,7 @@ class SalahAlarm {
     return SalahAlarm(
       id: map['id'] as int,
       titleEn: map['titleEn'] as String,
+      isAzan: map['isAzan'] as bool,
       date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
     );
   }
@@ -48,18 +51,21 @@ class SalahAlarm {
 
   @override
   String toString() {
-    return 'SalahAlarm(id: $id, titleEn: $titleEn, date: $date)';
+    return 'SalahAlarm(id: $id, titleEn: $titleEn, isAzanL $isAzan, date: $date)';
   }
 
   @override
   bool operator ==(covariant SalahAlarm other) {
     if (identical(this, other)) return true;
 
-    return other.id == id && other.titleEn == titleEn && other.date == date;
+    return other.id == id &&
+        other.titleEn == titleEn &&
+        other.isAzan == isAzan &&
+        other.date == date;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ titleEn.hashCode ^ date.hashCode;
+    return id.hashCode ^ titleEn.hashCode ^ isAzan.hashCode ^ date.hashCode;
   }
 }

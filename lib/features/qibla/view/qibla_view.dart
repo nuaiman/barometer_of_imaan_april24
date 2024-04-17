@@ -90,7 +90,7 @@ class QiblaView extends ConsumerWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 80.0),
+                  padding: const EdgeInsets.only(top: 120.0),
                   child: Consumer(
                     builder: (context, ref, _) {
                       final asyncValue = ref.watch(qiblaControllerProvider);
@@ -116,11 +116,14 @@ class QiblaView extends ConsumerWidget {
                                 !isEnglish
                                     ? 'কিবলা°${ref.read(languageIsEnglishProvider.notifier).convertEnglishToBangla(qiblaDirection.toStringAsFixed(0))}'
                                     : 'Qibla °${qiblaDirection.toStringAsFixed(0)}',
-                                style: const TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 40),
                               ),
-                              Text(!isEnglish
-                                  ? '${ref.read(languageIsEnglishProvider.notifier).convertEnglishToBangla(northDirection.toStringAsFixed(0))}°ন'
-                                  : '${northDirection.toStringAsFixed(0)}° N'),
+                              Text(
+                                !isEnglish
+                                    ? '${ref.read(languageIsEnglishProvider.notifier).convertEnglishToBangla(northDirection.toStringAsFixed(0))}°ন'
+                                    : '${northDirection.toStringAsFixed(0)}° N',
+                                style: const TextStyle(fontSize: 30),
+                              ),
                             ],
                           );
                         },
