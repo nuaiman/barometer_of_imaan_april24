@@ -12,7 +12,8 @@ void main() async {
     statusBarIconBrightness: Brightness.dark,
   ));
   await AwesomeNotifications().initialize(
-    'resource://drawable/launch_background',
+    // 'resource://drawable/launch_background',
+    null,
     [
       NotificationChannel(
         criticalAlerts: true,

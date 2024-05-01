@@ -105,14 +105,10 @@ class SettingsScreen extends ConsumerWidget {
                             },
                             child: Row(
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   width: 60,
-                                  child: Center(
-                                    child: SvgPicture.asset(
-                                      Svgs.language,
-                                      height: 30,
-                                    ),
-                                  ),
+                                  child:
+                                      Center(child: Icon(CupertinoIcons.globe)),
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
@@ -141,7 +137,7 @@ class SettingsScreen extends ConsumerWidget {
                                   width: 60,
                                   child: Center(
                                     child: Icon(
-                                      Icons.history,
+                                      CupertinoIcons.doc_chart,
                                       color: Palette.white,
                                       size: 30,
                                     ),
